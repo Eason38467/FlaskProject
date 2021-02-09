@@ -8,18 +8,40 @@
 
 #WSGI: python web server gateway interface
 
-from flask import Flask
+from flask import Flask, render_template, request,redirect
 
 import settings
 
 app = Flask(__name__)
 app.config.from_object(settings)
-
+users = []
 @app.route('/')
 def hello_world():
     return 'Hello World!'
 
+@app.route('/register', methods=["GET",'POST'])
+def register():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get('password')
+        repassword = request.form.get('repassword')
+        if password == repassword:
+            user={'username':username,'password':password}
+            users.append(user)
+            print(users)
+            #return '注册成功！<a href="/">返回首页</a>'
+            return redirect('/')
+        else:
+            return '两次密码不一致'
+
+
+
+    return render_template('register.html')
+@app.route('/register1')
+def register1():
+    return 'look at me!'
 
 if __name__ == '__main__':
+    print(app.url_map)  #路由规则表
     #app.run 参数可以修改 hostname， port， debug mode， 分别对应访问地址（默认localhost）， 访问端口（默认5000）， debug mode 可以动态反馈代码的变动
-    app.run()
+    app.run(port=8081)
